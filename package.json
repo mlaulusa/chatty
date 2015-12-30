@@ -16,7 +16,10 @@
     "nodemon": "^1.8.1"
   },
   "scripts": {
-    "start": "nodemon index.js | node_modules/.bin/bunyan",
+    "prestart": "npm install",
+    "start": "nodemon index.js | node_modules/.bin/bunyan -o short",
+    "nstart": "node index | node_modules/.bin/bunyan -o short",
+
     "postinstall": "bower install"
   },
   "repository": {

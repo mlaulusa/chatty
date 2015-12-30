@@ -25,7 +25,7 @@ require('./server/db').setup();
 // Middleware
 //================================================================
 app.use(express.static('app'));
-app.use(express.static('public'));
+app.use(express.static('server/public'));
 app.use(methodOverride());
 app.use(bodyParser.urlencoded(
     {
