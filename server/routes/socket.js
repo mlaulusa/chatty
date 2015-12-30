@@ -7,6 +7,7 @@ module.exports = function (io){
 
         socket.on('disconnect', function (){
             console.log('User disconnected');
+            socket.emit('event', 'User disconnected');
         });
 
         socket.on('message', function (message){
@@ -15,7 +16,7 @@ module.exports = function (io){
                 date: new Date()
             };
             messages.storeMessage(data);
-            socket.emit('message', data.message);
+            io.sockets.emit('broadcast', message);
         });
     });
 

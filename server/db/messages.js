@@ -89,7 +89,7 @@ module.exports = {
                     reject(err);
 
                 } else {
-                    resolve({confirmation: false, data: row});
+                    resolve({confirmation: true, data: row});
                 }
 
             }).close(closeDatabase());

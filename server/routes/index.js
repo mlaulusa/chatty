@@ -94,3 +94,20 @@ app.get('/api/users', function (req, res){
 
     });
 });
+
+app.get('/api/messages', function(req, res){
+
+    app.log.info('[%s] %s GET %s', req.ip, req.protocol, req.path);
+
+    messages.getAllMessages().then(function(success){
+
+        res.status(200);
+        res.json(success);
+
+    }, function(err){
+
+        res.status(401);
+        res.json(err);
+
+    })
+});

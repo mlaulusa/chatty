@@ -8,8 +8,8 @@ var methodOverride = require('method-override'),
 
 app = express();
 
-var server = require('http').Server(app),
-    io = require('socket.io')(server);
+var server = require('http').createServer(app),
+    io = require('socket.io').listen(server);
 
 //================================================================
 // Configure logs
