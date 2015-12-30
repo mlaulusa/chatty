@@ -6,6 +6,9 @@
 </head>
 <body>
 
+<ul>
+    <li ng-repeat="m in messages">{{m.content}}</li>
+</ul>
 <input type="text" ng-model="message" ng-enter="sendMessage()">
 
 </body>

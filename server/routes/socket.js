@@ -1,3 +1,5 @@
+var messages = require('../db/messages');
+
 module.exports = function (io){
 
     io.on('connection', function (socket){
@@ -7,9 +9,15 @@ module.exports = function (io){
             console.log('User disconnected');
         });
 
-        socket.on('message', function (data){
-            console.log(data);
+        socket.on('message', function (message){
+            var data = {
+                message: message,
+                date: new Date()
+            };
+            messages.storeMessage(data);
+            socket.emit('message', data.message);
         });
     });
 
 };
+

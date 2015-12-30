@@ -1,13 +1,15 @@
 //================================================================
 // Declare dependencies
 //================================================================
-var express = require('express');
-
-app = express();
 
 var methodOverride = require('method-override'),
     bodyParser = require('body-parser'),
-    server = require('http').Server(app);
+    express = require('express');
+
+app = express();
+
+var server = require('http').Server(app),
+    io = require('socket.io')(server);
 
 //================================================================
 // Configure logs
@@ -37,12 +39,16 @@ app.config = require('./config');
 //================================================================
 require('./server/routes');
 
-require('./server/routes/socket')(require('socket.io')(server));
+require('./server/routes/socket')(io);
 
 //================================================================
 // Get Angular app												||
 //================================================================
 app.get('*', function (req, res){
+
+    app.log.info('[%s] %s GET %s', req.ip, req.protocol, req.path);
+
+    res.status(200);
     res.sendFile('./app/index.html');
 });
 

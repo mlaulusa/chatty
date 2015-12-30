@@ -9,17 +9,17 @@ angular.module('chatty', [
         'ui-notification'
     ])
     .config(['$stateProvider', '$urlRouterProvider', 'NotificationProvider', function ($stateProvider, $urlRouterProvider, NotificationProvider){
-        $urlRouterProvider.otherwise('/chat');
+        $urlRouterProvider.otherwise('/');
         $stateProvider
             .state('main', {
                 url: '/',
-                templateUrl: '',
-                controller: ''
+                templateUrl: 'templates/signin.html',
+                controller: 'SignInCtrl'
             })
-            .state('main.chat', {
-                url: 'chat',
+            .state('chat', {
+                url: '/chat',
                 templateUrl: 'templates/chat.html',
-                controller: 'myCtrl'
+                controller: 'ChatCtrl'
             });
 
         NotificationProvider.setOptions({
