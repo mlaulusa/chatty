@@ -13,14 +13,20 @@
     "sqlite3": "^3.1.1"
   },
   "devDependencies": {
-    "nodemon": "^1.8.1"
+    "angular-mocks": "^1.4.8",
+    "jasmine-core": "^2.4.1",
+    "karma": "^0.13.16",
+    "karma-jasmine": "^0.3.6",
+    "karma-phantomjs-launcher": "^0.2.2",
+    "nodemon": "^1.8.1",
+    "phantomjs": "^1.9.19"
   },
   "scripts": {
     "prestart": "npm install",
-    "start": "nodemon index.js | node_modules/.bin/bunyan -o short",
-    "nstart": "node index | node_modules/.bin/bunyan -o short",
-
-    "postinstall": "bower install"
+    "start": "DEBUG=socket.io:* nodemon index.js | node_modules/.bin/bunyan -o short",
+    "nstart": "DEBUG=socket.io:* node index | node_modules/.bin/bunyan -o short",
+    "postinstall": "bower install",
+    "test": "karma start"
   },
   "repository": {
     "type": "git",

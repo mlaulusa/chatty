@@ -35,29 +35,38 @@ module.exports = {
                 if(err){
                     app.log.debug('Error at "SELECT * FROM users WHERE username = %s"', user.username);
                     app.log.error(err);
+                    //TODO: Fix error messages with Error(err)
                     reject(err);
-                } else {
+                } else if(row){
                     app.log.info('Found %s in users table', user.username);
-                    app.log.info(data);
+                    app.log.info(row);
 
                     bcrypt.compare(user.password, row.password, function (err, match){
 
                         if(err){
                             app.log.debug('Error comparing passwords for %s', user.username);
                             app.log.error(err);
+                            //TODO: Fix error messages with Error(err)
                             reject(err);
                         } else if(match){
                             app.log.info('Matched password for %s', user.username);
+                            //TODO: Fix resolved objects to not include confirmation as the confirmation is implicit to the resolve promise
                             resolve({confirmation: true, data: row});
                         } else {
                             app.log.info('Passwords did not match');
-                            reject({error: 'Passwords did not match'});
+                            //TODO: Fix error messages with Error(err)
+                            //reject({error: 'Passwords did not match'});
+                            reject(Error('Passwords did not match'));
                         }
 
                     });
+                } else {
+                    app.log.info('%s not found in users table', user.username);
+                    //TODO: Fix error messages with Error(err)
+                    reject('user was not found');
                 }
 
-            }).close(closeDatabase(err));
+            }).close(closeDatabase());
         });
     },
     createUser: function (user){
@@ -71,6 +80,7 @@ module.exports = {
 
                     app.log.debug('Error generating bcrypt salt');
                     app.log.error(err);
+                    //TODO: Fix error messages with Error(err)
                     reject(err);
 
                 } else {
@@ -80,23 +90,27 @@ module.exports = {
 
                             app.log.debug('Error generating hash from salt');
                             app.log.error(err);
+                            //TODO: Fix error messages with Error(err)
                             reject(err);
 
                         } else {
 
-                            db.run('INSERT INTO users (username, password) VALUES ($username, $password)', {
+                            db.run('INSERT INTO users (username, password, created_on) VALUES ($username, $password, $created_on)', {
                                 $username: user.username,
-                                $password: hash
+                                $password: hash,
+                                $created_on: user.created_on
                             }, function (err){
                                 if(err){
 
-                                    app.log.debug('Error at "INSERT INTO users (username, password) VALUES (%s, %s)', user.username, user.password);
+                                    app.log.debug('Error at "INSERT INTO users (username, password, created_on) VALUES (%s, %s %s)', user.username, user.password, user.created_on);
                                     app.log.error(err);
+                                    //TODO: Fix error messages with Error(err)
                                     reject(err);
 
                                 } else {
 
                                     app.log.info('Successfully inserted %s into users table', user.username);
+                                    //TODO: Fix resolved objects to not include confirmation as the confirmation is implicit to the resolve promise
                                     resolve({confirmation: true});
 
                                 }
@@ -120,9 +134,11 @@ module.exports = {
 
                     app.log.debug('Error at "SELECT * FROM users WHERE _id= %s"', id);
                     app.log.error(err);
+                    //TODO: Fix error messages with Error(err)
                     reject(err);
 
                 } else {
+                    //TODO: Fix resolved objects to not include confirmation as the confirmation is implicit to the resolve promise
                     resolve({confirmation: true, data: row});
                 }
             }).close(closeDatabase());
@@ -141,9 +157,11 @@ module.exports = {
 
                     app.log.debug('Error at "SELECT * FROM users WHERE = %s"', username);
                     app.log.error(err);
+                    //TODO: Fix error messages with Error(err)
                     reject(err);
 
                 } else {
+                    //TODO: Fix resolved objects to not include confirmation as the confirmation is implicit to the resolve promise
                     resolve({confirmation: true, data: row});
                 }
 
@@ -161,9 +179,11 @@ module.exports = {
 
                     app.log.debug('Error at "SELECT * FROM users"');
                     app.log.error(err);
+                    //TODO: Fix error messages with Error(err)
                     reject(err);
 
                 } else {
+                    //TODO: Fix resolved objects to not include confirmation as the confirmation is implicit to the resolve promise
                     resolve({confirmation: true, data: row});
                 }
 
@@ -183,9 +203,11 @@ module.exports = {
 
                     app.log.debug('Error at "DELETE FROM users WHERE _id = %s"', id);
                     app.log.error(err);
+                    //TODO: Fix error messages with Error(err)
                     reject(err);
 
                 } else {
+                    //TODO: Fix resolved objects to not include confirmation as the confirmation is implicit to the resolve promise
                     resolve({confirmation: true});
                 }
             }).close(closeDatabase());
@@ -204,10 +226,12 @@ module.exports = {
 
                     app.log.debug('Error at "DELETE FROM users WHERE username = %s"', username);
                     app.log.error(err);
+                    //TODO: Fix error messages with Error(err)
                     reject(err);
 
                 } else {
                     app.log.info('Successfully deleted %s', username);
+                    //TODO: Fix resolved objects to not include confirmation as the confirmation is implicit to the resolve promise
                     resolve({confirmation: true})
                 }
             }).close(closeDatabase());

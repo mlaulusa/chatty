@@ -1,14 +1,15 @@
 angular.module('chatty.controllers', [])
-    .controller('ChatCtrl', ['$scope', '$http', '$log', 'socket', 'Notification', function ($scope, $http, $log, socket, Notification){
+    .controller('ChatCtrl', ['$scope', '$http', '$log', '$localStorage', 'socket', 'Notification', 'MessageFactory', function ($scope, $http, $log, $localStorage, socket, Notification, MessageFactory){
 
         $scope.messages = [];
 
-        $http.get('/api/messages').then(function (success){
-            angular.forEach(success.data.data, function (value){
+        //TODO: Fix factory then calls
+        MessageFactory.getAll().then(function (success){
+            angular.forEach(success, function (value){
                 this.push(value.message);
             }, $scope.messages)
         }, function (err){
-            Notification.error(err);
+            $log.error(err);
         });
 
         $scope.$on('socket:broadcast', function (event, data){
@@ -24,23 +25,42 @@ angular.module('chatty.controllers', [])
 
         $scope.sendMessage = function (){
 
+            //TODO: Fix factory then calls
+            MessageFactory.saveMessage($scope.message).then(function (success){
+                $log.info(success);
+            }, function (err){
+                $log.info(err);
+            });
             socket.emit('message', $scope.message);
             $scope.message = '';
 
         };
 
     }])
-    .controller('SignInCtrl', ['$scope', '$http', '$log', function ($scope, $http, $log){
+    .controller('SignInCtrl', ['$scope', '$http', '$log', '$localStorage', 'UserFactory', function ($scope, $http, $log, $localStorage, UserFactory){
 
         $scope.signIn = function (){
-            return $http.post('/signin', {
-                username: $scope.username,
-                password: $scope.password
-            }).then(function (success){
+            UserFactory.signIn({user: $scope.user}).then(function (success){
+
+                //TODO: There is no error/success function call.  The factory service must pass a successful/error message to be parsed here and figure out what to do at that point, as the success call is called every time whether or not an error occurred.  This should be done in all of the factory calls in the controller
+
+                $log.info(success.data);
+                $log.info(new Date(success.data.created_on).toString());
+            }, function (err){
+                $log.info('An error');
+                $log.error(err);
+            });
+        };
+
+    }])
+    .controller('SignUpCtrl', ['$scope', '$http', '$log', function ($scope, $http, $log){
+
+        //TODO: Fix factory then calls
+        $scope.signUp = function (){
+            return $http.post('/api/user', {user: $scope.user}).then(function (success){
                 $log.info(success);
             }, function (err){
                 $log.info(err);
             });
-        };
-
+        }
     }]);

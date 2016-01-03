@@ -6,15 +6,21 @@ angular.module('chatty', [
         'btford.socket-io',
         'ui.bootstrap',
         'ui.router',
-        'ui-notification'
+        'ui-notification',
+        'ngStorage'
     ])
     .config(['$stateProvider', '$urlRouterProvider', 'NotificationProvider', function ($stateProvider, $urlRouterProvider, NotificationProvider){
         $urlRouterProvider.otherwise('/');
         $stateProvider
-            .state('main', {
+            .state('signin', {
                 url: '/',
                 templateUrl: 'templates/signin.html',
                 controller: 'SignInCtrl'
+            })
+            .state('signup', {
+                url: '/signup',
+                templateUrl: 'templates/signup.html',
+                controller: 'SignUpCtrl'
             })
             .state('chat', {
                 url: '/chat',
