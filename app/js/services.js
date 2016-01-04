@@ -10,7 +10,7 @@ angular.module('chatty.services', [])
 
             getAll: function (){
                 return $http.get('/api/messages').then(function (success){
-                    return success.data.data;
+                    return success.data;
                 }, function (err){
                     return err;
                 })
@@ -18,7 +18,7 @@ angular.module('chatty.services', [])
 
             getByUsername: function (username){
                 return $http.get('/api/messages/user/%s', username).then(function (success){
-                    return success.data.data;
+                    return success.data;
                 }, function (err){
                     return err;
                 })
@@ -26,7 +26,7 @@ angular.module('chatty.services', [])
 
             getByID: function (id){
                 return $http.get('/api/message/%s', id).then(function(success){
-                    return success.data.data;
+                    return success.data;
                 }, function(err){
                     return err;
                 })
@@ -34,25 +34,27 @@ angular.module('chatty.services', [])
 
             getByRoom: function (room){
                 return $http.get('/api/%s/messages', room).then(function(success){
-                    return success.data.data;
+                    return success.data;
                 }, function(err){
                     return err;
                 })
             },
+
             saveMessage: function(message){
                 return $http.post('/api/message', message).then(function(success){
-                    return success.data.data;
+                    return success.data;
                 }, function(err){
                     return err;
                 })
             }
         }
     }])
+
     .factory('UserFactory', ['$http', '$log', function($http, $log){
         return {
             signIn: function(user){
                 return $http.post('/signin', user).then(function(success){
-                    return success;
+                    return success.data;
                 }, function(err){
                     return err;
                 })

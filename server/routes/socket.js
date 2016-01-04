@@ -1,5 +1,3 @@
-var messages = require('../db/messages');
-
 module.exports = function (io){
 
     io.on('connection', function (socket){
@@ -11,11 +9,6 @@ module.exports = function (io){
         });
 
         socket.on('message', function (message){
-            var data = {
-                message: message,
-                date: new Date()
-            };
-            messages.storeMessage(data);
             io.sockets.emit('broadcast', message);
         });
     });

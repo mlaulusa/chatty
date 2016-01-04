@@ -1,12 +1,17 @@
 angular.module('chatty.controllers', [])
     .controller('ChatCtrl', ['$scope', '$http', '$log', '$localStorage', 'socket', 'Notification', 'MessageFactory', function ($scope, $http, $log, $localStorage, socket, Notification, MessageFactory){
 
+        $scope.$storage = $localStorage;
+
         $scope.messages = [];
 
         //TODO: Fix factory then calls
         MessageFactory.getAll().then(function (success){
             angular.forEach(success, function (value){
-                this.push(value.message);
+                if(value){
+                    $log.info(value);
+                    this.push(value.message);
+                }
             }, $scope.messages)
         }, function (err){
             $log.error(err);
@@ -20,32 +25,39 @@ angular.module('chatty.controllers', [])
                 Notification.info(data);
                 $scope.messages.push(data);
             }
-
         });
 
         $scope.sendMessage = function (){
 
             //TODO: Fix factory then calls
-            MessageFactory.saveMessage($scope.message).then(function (success){
-                $log.info(success);
-            }, function (err){
-                $log.info(err);
+            MessageFactory.saveMessage({message: {
+                message: $scope.message,
+                username: $scope.$storage.username,
+                room: 'default',
+                date: new Date()
+            }}).then(function (data){
+                $log.info(data);
             });
             socket.emit('message', $scope.message);
             $scope.message = '';
+
+
 
         };
 
     }])
     .controller('SignInCtrl', ['$scope', '$http', '$log', '$localStorage', 'UserFactory', function ($scope, $http, $log, $localStorage, UserFactory){
 
+        $scope.$storage = $localStorage;
+
         $scope.signIn = function (){
             UserFactory.signIn({user: $scope.user}).then(function (success){
 
                 //TODO: There is no error/success function call.  The factory service must pass a successful/error message to be parsed here and figure out what to do at that point, as the success call is called every time whether or not an error occurred.  This should be done in all of the factory calls in the controller
 
-                $log.info(success.data);
-                $log.info(new Date(success.data.created_on).toString());
+                $log.info(success);
+                $log.info(new Date(success.created_on).toString());
+                $scope.$storage.username = success.username;
             }, function (err){
                 $log.info('An error');
                 $log.error(err);

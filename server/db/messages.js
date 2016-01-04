@@ -21,25 +21,23 @@ var closeDatabase = function (err){
 
 module.exports = {
 
-    storeMessage: function (data){
+    storeMessage: function (message){
 
         return new Promise(function (resolve, reject){
             var db = setup();
 
-            db.run('INSERT INTO messages (username, message, room, date) VALUES ($username, $message, $room, $date)', {
-                $username: data.username,
-                $message: data.message,
-                $room: data.room,
-                $date: data.date
-            }, function (err){
+            var statement = ('INSERT INTO messages (message, username, room, date) VALUES ($data)').replace('$data', ('"$values"').replace('$values', Object.keys(message).map(function(key) { return message[key]; }).join('", "')));
+
+            db.run(statement, function (err){
 
                 if(err){
-                    app.log.debug('Error at "INSERT INTO messages (username, message, room, date) VALUES (%s, %s, %s, %s)"', data.username, data.message, data.room, data.date);
+                    app.log.debug('Error at %s', statement);
                     app.log.error(err);
                     reject(err);
                 } else {
-                    app.log.info('Inserted "%s" into database', data.message);
-                    resolve({confirmation: true});
+                    var msg = ('Inserted "$msg" into database').replace('$msg', message.message);
+                    app.log.info(msg);
+                    resolve(msg);
                 }
 
             }).close(closeDatabase());
@@ -52,24 +50,25 @@ module.exports = {
         return new Promise(function (resolve, reject){
             var db = setup();
 
-            db.get('SELECT * FROM messages WHERE _id = $id', {
-                $id: id
-            }, function (err, data){
+            var statement = ('SELECT * FROM messages WHERE _id = "$data"').replace('$data', id);
+
+            db.get(statement, function (err, data){
                 if(err){
 
-                    app.log.debug('Error at "SELECT * FROM messages WHERE _id = %d"', id);
-                    app.log.error(err);
+                    app.log.debug('Error at %s', statement);
+                    app.log.error(Error(err));
                     reject(err);
 
                 } else if(data){
 
-                    app.log.info('Found message of _id %d', id);
-                    resolve({confirmation: true, data: data});
+                    app.log.info(('Found message of _id $id').replace('$id', id));
+                    resolve(data);
 
                 } else {
 
-                    app.log.warn('Something else happened when getting message by _id');
-                    reject('Something went wrong getting message by _id');
+                    var msg = ('Message _id of $id not found').replace('$id', id);
+                    app.log.info(msg);
+                    reject({status: 404, msg: msg});
 
                 }
             }).close(closeDatabase());
@@ -80,16 +79,18 @@ module.exports = {
         return new Promise(function (resolve, reject){
             var db = setup();
 
-            db.all('SELECT * FROM messages', function (err, row){
+            var statement = 'SELECT * FROM messages';
+
+            db.all(statement, function (err, row){
 
                 if(err){
 
-                    app.log.debug('Error at "SELECT * FROM messages"');
+                    app.log.debug('Error at "$statement"', statement);
                     app.log.error(err);
                     reject(err);
 
                 } else {
-                    resolve({confirmation: true, data: row});
+                    resolve(row);
                 }
 
             }).close(closeDatabase());
@@ -100,17 +101,17 @@ module.exports = {
         return new Promise(function (resolve, reject){
             var db = setup();
 
-            db.get('SELECT * FROM messages WHERE room = $room', {
-                $room: room
-            }, function (err, row){
+            var statement = ('SELECT * FROM messages WHERE room = "$room"').replace('$room', room);
+
+            db.get(statement, function (err, row){
                 if(err){
 
-                    app.log.debug('Error at "SELECT * FROM messages WHERE room = %s"', room);
+                    app.log.debug('Error at "%s"', statement);
                     app.log.error(err);
                     reject(err);
 
                 } else {
-                    resolve({confirmation: true, data: row});
+                    resolve(row);
                 }
             }).close(closeDatabase());
         });
@@ -120,18 +121,18 @@ module.exports = {
         return new Promise(function (resolve, reject){
             var db = setup();
 
-            db.get('SELECT * FROM messages WHERE username = $username', {
-                $username: username
-            }, function (err, row){
+            var statement = ('SELECT * FROM messages WHERE username = "$username"').replace('$username', username);
+
+            db.get(statement, function (err, row){
 
                 if(err){
 
-                    app.log.debug('Error at "SELECT * FROM messages WHERE room = %s"', username);
+                    app.log.debug('Error at "%s"', statement);
                     app.log.error(err);
                     reject(err);
 
                 } else {
-                    resolve({confirmation: true, data: row});
+                    resolve(row);
                 }
             }.close(closeDatabase()));
 

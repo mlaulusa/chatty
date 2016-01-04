@@ -18,11 +18,7 @@ app.post('/signin', function (req, res){
     users.authenticate(req.body.user).then(function (success){
 
         res.status(200);
-        res.json({
-            _id: success.data._id,
-            username: success.data.username,
-            created_on: success.data.created_on
-        });
+        res.json(success);
 
     }, function (err){
 
@@ -56,7 +52,7 @@ app.post('/api/message', function(req, res){
 
     app.log.info('[%s] %s POST %s', req.ip, req.protocol, req.path);
 
-    messages.storeMessage(req.body.data).then(function(success){
+    messages.storeMessage(req.body.message).then(function(success){
 
         res.status(200);
         res.json(success);
@@ -149,8 +145,13 @@ app.get('/api/message/:id', function (req, res){
 
     }, function (err){
 
-        res.status(401);
-        res.json(err);
+        if (err.status){
+            res.status(404);
+            res.json(err.msg);
+        } else {
+            res.status(401);
+            res.json(err);
+        }
 
     });
 });
