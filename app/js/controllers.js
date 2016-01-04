@@ -36,12 +36,14 @@ angular.module('chatty.controllers', [])
                 room: 'default',
                 date: new Date()
             }}).then(function (data){
-                $log.info(data);
+                if (data.status != '401') {
+                  $log.info(data);
+                  socket.emit('message', $scope.message);
+                  $scope.message = '';
+                } else {
+                  Notification.error('No room was selected');
+                }
             });
-            socket.emit('message', $scope.message);
-            $scope.message = '';
-
-
 
         };
 

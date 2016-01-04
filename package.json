@@ -23,6 +23,7 @@
   },
   "scripts": {
     "prestart": "npm install",
+    "prenstart": "npm install",
     "start": "DEBUG=socket.io:* nodemon index.js | node_modules/.bin/bunyan -o short",
     "nstart": "DEBUG=socket.io:* node index | node_modules/.bin/bunyan -o short",
     "postinstall": "bower install",
