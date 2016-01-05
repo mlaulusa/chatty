@@ -1,5 +1,4 @@
-var sqlite3 = require('sqlite3'),
-    bcrypt = require('bcrypt');
+var sqlite3 = require('sqlite3');
 
 var setup = function (){
 
@@ -25,10 +24,8 @@ module.exports = {
     createRoom: function (room){
         return new Promise(function (resolve, reject){
 
-            var db = setup();
-            var statement = ('INSERT INTO rooms (room, created_on, password) VALUES ($data)').replace('$data', ('$value').replace('$value', object.keys(room).map(function (key){
-                return [key];
-            }).join('", "')));
+            var db = setup(),
+                statement = ('INSERT INTO rooms (room, created_on, password) VALUES ($data)').replace('$data', ('"$value"').replace('$value', Object.keys(room).map(function (key){ return room[key]; }).join('", "')));
 
             db.run(statement, function (err){
                 if(err){
@@ -49,7 +46,6 @@ module.exports = {
     },
 
     getAllRooms: function (){
-
         return new Promise(function (resolve, reject){
 
             var db = setup(),
@@ -70,11 +66,10 @@ module.exports = {
     },
 
     getRoomByID: function (id){
-
         return new Promise(function (resolve, reject){
 
-            var db = setup();
-            var statement = ('SELECT * FROM rooms WHERE _id = "$id"').replace('$id', id);
+            var db = setup(),
+                statement = ('SELECT * FROM rooms WHERE _id = "$id"').replace('$id', id);
 
             db.get(statement, function (err, row){
                 if(err){
@@ -91,11 +86,10 @@ module.exports = {
     },
 
     getRoomByRoom: function (room){
-
        return new Promise(function (resolve, reject){
 
-            var db = setup();
-            var statement = ('SELECT * FROM rooms WHERE room = "$room"').replace('$room', room);
+            var db = setup(),
+                statement = ('SELECT * FROM rooms WHERE room = "$room"').replace('$room', room);
 
             db.get(statement, function (err, row){
                 if(err){
@@ -109,5 +103,101 @@ module.exports = {
                 }
             }).close(closeDatabase());
         });
+    },
+
+    deleteByRoom: function(room){
+      return new Promise(function(resolve, reject){
+
+        var db = setup(),
+            statement = ('DELETE FROM rooms WHERE room = "$room"').replace('$room', room);
+
+        db.run(statement, function(err){
+          if(err){
+
+            app.log.debug('Error at %s', statement);
+            app.log.error(err);
+            reject(err);
+
+          } else {
+
+            var msg = ('$room was deleted').replace('$room', room);
+            app.log.info(msg);
+            resolve(msg);
+
+          }
+        }).close(closeDatabase());
+      });
+    },
+
+    deleteByID: function(id){
+      return new Promise(function(resolve, reject){
+
+        var db = setup(),
+            statement = ('DELETE FROM rooms WHERE _id = "$id"').replace('$id', id);
+
+        db.run(statement, function(err){
+          if(err){
+
+            app.log.debug('Error at %s', statement);
+            app.log.error(err);
+            reject(err);
+
+          } else {
+
+            var msg = ('$id was deleted').replace('$id', id);
+            app.log.info(msg);
+            resolve(msg);
+
+          }
+        }).close(closeDatabase());
+      });
+    },
+
+    updatePasswordByID: function(id, password){
+      return new Promise(function(resolve, reject){
+
+        var db = setup(),
+            statement = ('UPDATE rooms SET password = "$password" WHERE _id = "$id"').replace('$password', password).replace('$id', id);
+
+        db.run(statement, function(err){
+          if(err){
+
+            app.log.debug('Error at %s', statement);
+            app.log.error(err);
+            reject(err);
+
+          } else {
+
+            var msg = ('$id was updated').replace('$id', id);
+            app.log.info(msg);
+            resolve(msg);
+
+          }
+        }).close(closeDatabase());
+      });
+    },
+
+    updatePasswordByRoom: function(room, password){
+      return new Promise(function(resolve, reject){
+
+        var db = setup(),
+            statement = ('UPDATE rooms SET password = "$password" WHERE _id = "$id"').replace('$password', password).replace('$id', id);
+
+        db.run(statement, function(err){
+          if(err){
+
+            app.log.debug('Error at %s', statement);
+            app.log.error(err);
+            reject(err);
+
+          } else {
+
+            var msg = ('$room was updated').replace('$room', room);
+            app.log.info(msg);
+            resolve(msg);
+
+          }
+        }).close(closeDatabase());
+      });
     }
 };

@@ -4,11 +4,22 @@
 
 var methodOverride = require('method-override'),
     bodyParser = require('body-parser'),
-    express = require('express');
+    express = require('express'),
+    fs = require('fs'),
+    /*
+      privately signed https certificates
+      openssl genrsa -out privatekey.pem 1024
+      openssl req -new -key privatekey.pem -out certrequest.csr
+      openssl x509 -req -in certrequest.csr -signkey privatekey.pem -out certificate.pem
+    */
+    httpsOptions = {
+      key: fs.readFileSync('server/public/privatekey.pem'),
+      cert: fs.readFileSync('server/public/certificate.pem')
+    };
 
 app = express();
 
-var server = require('http').createServer(app),
+var server = require('https').createServer(httpsOptions, app),
     io = require('socket.io').listen(server);
 
 //================================================================

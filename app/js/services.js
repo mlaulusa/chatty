@@ -64,7 +64,7 @@ angular.module('chatty.services', [])
         }
     }])
 
-    .factory('RoomFactory', ['$http', '$lop', function ($http, $log){
+    .factory('RoomFactory', ['$http', '$log', function ($http, $log){
         return {
             getAll: function (){
                 return $http.get('/api/rooms').then(function (success){
@@ -107,7 +107,7 @@ angular.module('chatty.services', [])
             },
 
             updatePasswordByRoom: function (room, password){
-                return $http.put(('/api/room/$room').replace('$room', id), password).then(function (success){
+                return $http.put(('/api/room/$room').replace('$room', room), password).then(function (success){
                     return success.data;
                 }, function (err){
                     return err;

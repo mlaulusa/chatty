@@ -84,9 +84,11 @@ angular.module('chatty.controllers', [])
 
         $scope.addRoom = function (){
             RoomFactory.createRoom({
+              room: {
                 room: $scope.room,
                 created_on: new Date(),
-                password: $scope.password ? $scope.password : null
+                password: $scope.password || null
+              }
             }).then(function (data){
                 $log.info(data);
             });
