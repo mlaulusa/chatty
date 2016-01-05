@@ -30,18 +30,20 @@ angular.module('chatty.controllers', [])
         $scope.sendMessage = function (){
 
             //TODO: Fix factory then calls
-            MessageFactory.saveMessage({message: {
-                message: $scope.message,
-                username: $scope.$storage.username,
-                room: 'default',
-                date: new Date()
-            }}).then(function (data){
-                if (data.status != '401') {
-                  $log.info(data);
-                  socket.emit('message', $scope.message);
-                  $scope.message = '';
+            MessageFactory.saveMessage({
+                message: {
+                    message: $scope.message,
+                    username: $scope.$storage.username,
+                    room: 'default',
+                    date: new Date()
+                }
+            }).then(function (data){
+                if(data.status != '401'){
+                    $log.info(data);
+                    socket.emit('message', $scope.message);
+                    $scope.message = '';
                 } else {
-                  Notification.error('No room was selected');
+                    Notification.error('No room was selected');
                 }
             });
 
@@ -77,4 +79,16 @@ angular.module('chatty.controllers', [])
                 $log.info(err);
             });
         }
+    }])
+    .controller('RoomCtrl', ['$scope', '$log', 'RoomFactory', function ($scope, $log, RoomFactory){
+
+        $scope.addRoom = function (){
+            RoomFactory.createRoom({
+                room: $scope.room,
+                created_on: new Date(),
+                password: $scope.password ? $scope.password : null
+            }).then(function (data){
+                $log.info(data);
+            });
+        };
     }]);

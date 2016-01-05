@@ -26,7 +26,9 @@ module.exports = {
         return new Promise(function (resolve, reject){
             var db = setup();
 
-            var statement = ('INSERT INTO messages (message, username, room, date) VALUES ($data)').replace('$data', ('"$values"').replace('$values', Object.keys(message).map(function(key) { return message[key]; }).join('", "')));
+            var statement = ('INSERT INTO messages (message, username, room, date) VALUES ($data)').replace('$data', ('"$values"').replace('$values', Object.keys(message).map(function (key){
+                return message[key];
+            }).join('", "')));
 
             db.run(statement, function (err){
 

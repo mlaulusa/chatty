@@ -48,16 +48,16 @@ app.post('/api/user', function (req, res){
 
 });
 
-app.post('/api/message', function(req, res){
+app.post('/api/message', function (req, res){
 
     app.log.info('[%s] %s POST %s', req.ip, req.protocol, req.path);
 
-    messages.storeMessage(req.body.message).then(function(success){
+    messages.storeMessage(req.body.message).then(function (success){
 
         res.status(200);
         res.json(success);
 
-    }, function(err){
+    }, function (err){
 
         res.status(401);
         res.json(err);
@@ -145,7 +145,7 @@ app.get('/api/message/:id', function (req, res){
 
     }, function (err){
 
-        if (err.status){
+        if(err.status){
             res.status(404);
             res.json(err.msg);
         } else {

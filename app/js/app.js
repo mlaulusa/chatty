@@ -17,6 +17,11 @@ angular.module('chatty', [
                 templateUrl: 'templates/signin.html',
                 controller: 'SignInCtrl'
             })
+            .state('room', {
+                url: '/room',
+                templateUrl: 'templates/room.html',
+                controller: 'RoomCtrl'
+            })
             .state('signup', {
                 url: '/signup',
                 templateUrl: 'templates/signup.html',
