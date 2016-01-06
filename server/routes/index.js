@@ -1,7 +1,21 @@
-var users = require('../db/users'),
-    messages = require('../db/messages'),
-    rooms = require('../db/rooms');
+//================================================================
+// message API calls
+//================================================================
+require('./messages');
 
+//================================================================
+// room API calls
+//================================================================
+require('./rooms');
+
+//================================================================
+// user API calls
+//================================================================
+require('./users');
+
+//================================================================
+// Test routes
+//================================================================
 app.get('/test', function (req, res){
 
     app.log.info('[%s] %s GET %s', req.ip, req.protocol, req.path);
@@ -12,317 +26,13 @@ app.get('/test', function (req, res){
     messages.test(req, res);
 });
 
-app.post('/signin', function (req, res){
-
-    app.log.info('[%s] %s POST %s', req.ip, req.protocol, req.path);
-
-    users.authenticate(req.body.user).then(function (success){
-
-        res.status(200);
-        res.json(success);
-
-    }, function (err){
-
-        res.status(401);
-        res.json(err);
-
-    });
-});
-
-app.post('/api/user', function (req, res){
-
-    app.log.info('[%s] %s POST %s', req.ip, req.protocol, req.path);
-
-    req.body.user.created_on = new Date();
-
-    users.createUser(req.body.user).then(function (success){
-
-        res.status(200);
-        res.json(success);
-
-    }, function (err){
-
-        res.status(401);
-        res.json(err);
-
-    });
-
-});
-
-app.post('/api/message', function (req, res){
-
-    app.log.info('[%s] %s POST %s', req.ip, req.protocol, req.path);
-
-    messages.storeMessage(req.body.message).then(function (success){
-
-        res.status(200);
-        res.json(success);
-
-    }, function (err){
-
-        res.status(401);
-        res.json(err);
-
-    });
-});
-
-app.get('/api/user/:id', function (req, res){
+//================================================================
+// Get Angular app												||
+//================================================================
+app.get('*', function (req, res){
 
     app.log.info('[%s] %s GET %s', req.ip, req.protocol, req.path);
-
-    users.getUserById(req.params.id).then(function (success){
-
-        res.status(200);
-        res.json(success);
-
-    }, function (err){
-
-        res.status(401);
-        res.json(err);
-
-    });
-
-});
-
-app.get('/api/user', function (req, res){
-
-    app.log.info('[%s] %s GET %s', req.ip, req.protocol, req.path);
-
-    users.getUserByUsername(req.body.username).then(function (success){
-
-        res.status(200);
-        res.json(success);
-
-    }, function (err){
-
-        res.status(401);
-        res.json(err);
-
-    });
-});
-
-app.get('/api/users', function (req, res){
-
-    app.log.info('[%s] %s GET %s', req.ip, req.protocol, req.path);
-
-    users.getAllUsers().then(function (success){
-
-        res.status(200);
-        res.json(success);
-
-    }, function (err){
-
-        res.status(401);
-        res.json(err);
-
-    });
-});
-
-app.get('/api/messages', function (req, res){
-
-    app.log.info('[%s] %s GET %s', req.ip, req.protocol, req.path);
-
-    messages.getAllMessages().then(function (success){
-
-        res.status(200);
-        res.json(success);
-
-    }, function (err){
-
-        res.status(401);
-        res.json(err);
-
-    });
-});
-
-app.get('/api/message/:id', function (req, res){
-
-    app.log.info('[%s] %s GET %s', req.ip, req.protocol, req.path);
-
-    messages.getMessageById(req.params.id).then(function (success){
-
-        res.status(200);
-        res.json(success);
-
-    }, function (err){
-
-        if(err.status){
-            res.status(404);
-            res.json(err.msg);
-        } else {
-            res.status(401);
-            res.json(err);
-        }
-
-    });
-});
-
-app.get('/api/:room/messages', function (req, res){
-
-    app.log.info('[%s] %s GET %s', req.ip, req.protocol, req.path);
-
-    messages.getAllMessagesByRoom(req.params.room).then(function (success){
-
-        res.status(200);
-        res.json(success);
-
-    }, function (err){
-
-        res.status(200);
-        res.json(err);
-
-    });
-});
-
-app.get('/api/messages/user/:username', function (req, res){
-
-    app.log.info('[%s] %s GET %s', req.ip, req.protocol, req.path);
-
-    messages.getAllMessagesByUser(req.params.username).then(function (success){
-
-        res.status(200);
-        res.json(success);
-
-    }, function (err){
-
-        res.status(401);
-        res.json(err);
-
-    });
-});
-
-app.get('/api/rooms', function(req, res){
-
-    app.log.info('[%s] %s GET %s', req.ip, req.protocol, req.path);
-
-    rooms.getAll().then(function(success){
-
-      res.status(200);
-      res.json(success);
-
-    }, function(err){
-
-      res.status(401);
-      res.json(err);
-
-    });
-});
-
-app.get('/api/room/:room', function(req, res){
-
-  app.log.info('[%s] %s GET %s', req.ip, req.protocol, req.path);
-
-  rooms.getRoomByRoom(req.params.room).then(function(success){
 
     res.status(200);
-    res.json(success);
-
-  }, function(err){
-
-    res.status(401);
-    res.json(err);
-
-  });
-});
-
-app.get('/api/room/id/:id', function(req, res){
-
-  app.log.info('[%s] %s GET %s', req.ip, req.protocol, req.path);
-
-  rooms.getRoomByID(req.params.id).then(function(success){
-
-    res.status(200);
-    res.json(success);
-
-  }, function(err){
-
-    res.status(401);
-    res.json(err);
-
-  });
-});
-
-app.post('/api/room', function(req, res){
-
-  app.log.info('[%s] %s POST %s', req.ip, req.protocol, req.path);
-
-  rooms.createRoom(req.body.room).then(function(success){
-
-    res.status(200);
-    res.json(success);
-
-  }, function(err){
-
-    res.status(401);
-    res.json(err);
-
-  });
-});
-
-app.delete('/api/room/id/:id', function(req, res){
-
-  app.log.info('[%s] %s DELETE %s', req.ip, req.protocol, req.path);
-
-  rooms.deleteByID(req.params.id).then(function(success){
-
-    res.status(200);
-    res.json(success);
-
-  }, function(err){
-
-    res.status(401);
-    res.json(err);
-
-  });
-});
-
-app.delete('/api/room/:room', function(req, res){
-
-  app.log.info('[%s] %s DELETE %s', req.ip, req.protocol, req.path);
-
-  rooms.deleteByRoom(req.params.room).then(function(success){
-
-    res.status(200);
-    res.json(success);
-
-  }, function(err){
-
-    res.status(401);
-    res.json(err);
-
-  });
-});
-
-app.put('/api/room/id/:id', function(req, res){
-
-  app.log.info('[%s] %s PUT %s', req.ip, req.protocol, req.path);
-
-  rooms.updatePasswordByID(req.params.id, req.body.password).then(function(success){
-
-    res.status(200);
-    res.json(success);
-
-  }, function(err){
-
-    res.status(401);
-    res.json(err);
-
-  });
-});
-
-app.put('/api/room/:room', function(req, res){
-
-  app.log.info('[%s] %s PUT %s', req.ip, req.protocol, req.path);
-
-  rooms.updatePasswordByRoom(req.params.room, req.body.password).then(function(success){
-
-    res.status(200);
-    res.json(success);
-
-  }, function(err){
-
-    res.status(401);
-    res.json(err);
-
-  });
+    res.sendFile('./app/index.html');
 });

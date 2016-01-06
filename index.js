@@ -5,21 +5,14 @@
 var methodOverride = require('method-override'),
     bodyParser = require('body-parser'),
     express = require('express'),
-    fs = require('fs'),
-    /*
-      privately signed https certificates
-      openssl genrsa -out privatekey.pem 1024
-      openssl req -new -key privatekey.pem -out certrequest.csr
-      openssl x509 -req -in certrequest.csr -signkey privatekey.pem -out certificate.pem
-    */
-    httpsOptions = {
-      key: fs.readFileSync('server/public/privatekey.pem'),
-      cert: fs.readFileSync('server/public/certificate.pem')
-    };
+    fs = require('fs');
 
 app = express();
 
-var server = require('https').createServer(httpsOptions, app),
+var server = require('https').createServer({
+        key: fs.readFileSync('server/public/privatekey.pem'),
+        cert: fs.readFileSync('server/public/certificate.pem')
+    }, app),
     io = require('socket.io').listen(server);
 
 //================================================================
@@ -46,22 +39,14 @@ app.use(bodyParser.json());
 app.config = require('./config');
 
 //================================================================
-// API routes													||
+// Web socket routes
 //================================================================
-require('./server/routes');
-
 require('./server/routes/socket')(io);
 
 //================================================================
-// Get Angular app												||
+// API routes													||
 //================================================================
-app.get('*', function (req, res){
-
-    app.log.info('[%s] %s GET %s', req.ip, req.protocol, req.path);
-
-    res.status(200);
-    res.sendFile('./app/index.html');
-});
+require('./server/routes');
 
 //================================================================
 // Start server													||

@@ -80,15 +80,18 @@ angular.module('chatty.controllers', [])
             });
         }
     }])
-    .controller('RoomCtrl', ['$scope', '$log', 'RoomFactory', function ($scope, $log, RoomFactory){
+    .controller('RoomCtrl', ['$scope', '$log', '$localStorage', 'RoomFactory', function ($scope, $log, $localStorage, RoomFactory){
+
+        $scope.$storage = $localStorage;
 
         $scope.addRoom = function (){
             RoomFactory.createRoom({
-              room: {
-                room: $scope.room,
-                created_on: new Date(),
-                password: $scope.password || null
-              }
+                room: {
+                    room: $scope.room,
+                    created_on: new Date(),
+                    password: $scope.password || null,
+                    created_by: $scope.$storage.username
+                }
             }).then(function (data){
                 $log.info(data);
             });

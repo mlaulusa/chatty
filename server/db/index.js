@@ -25,7 +25,7 @@ module.exports = {
 
                 db.run('CREATE TABLE messages (_id INTEGER PRIMARY KEY, username TEXT NOT NULL, message TEXT NOT NULL, room TEXT NOT NULL, date BLOB NOT NULL, FOREIGN KEY (username) REFERENCES users (username), FOREIGN KEY (room) REFERENCES rooms (room))');
                 db.run('CREATE TABLE users (_id INTEGER PRIMARY KEY, username TEXT NOT NULL UNIQUE, password BLOB NOT NULL, created_on BLOB NOT NULL)');
-                db.run('CREATE TABLE rooms (_id INTEGER PRIMARY KEY, room TEXT NOT NULL UNIQUE, created_on BLOB NOT NULL, password BLOB)');
+                db.run('CREATE TABLE rooms (_id INTEGER PRIMARY KEY, room TEXT NOT NULL UNIQUE, created_on BLOB NOT NULL, created_by TEXT, password BLOB, FOREIGN KEY (created_on) REFERENCES users (username))');
 
             }).close(function (err){
 
@@ -40,6 +40,4 @@ module.exports = {
 
         }
     }
-
-
 };
