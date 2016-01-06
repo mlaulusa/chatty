@@ -1,24 +1,32 @@
 angular.module('chatty.controllers', [])
-    .controller('ChatCtrl', ['$scope', '$http', '$log', '$localStorage', 'socket', 'Notification', 'MessageFactory', function ($scope, $http, $log, $localStorage, socket, Notification, MessageFactory){
+    .controller('ChatCtrl', ['$scope', '$http', '$log', '$localStorage', 'socket', 'Notification', 'MessageFactory', 'RoomFactory', function ($scope, $http, $log, $localStorage, socket, Notification, MessageFactory, RoomFactory){
 
-        $scope.$storage = $localStorage;
+        $scope.$storage = $localStorage.$default({room: 'default'});
 
         $scope.messages = [];
+        $scope.rooms = [];
 
-        //TODO: Fix factory then calls
-        MessageFactory.getAll().then(function (success){
-            angular.forEach(success, function (value){
-                if(value){
-                    $log.info(value);
-                    this.push(value.message);
-                }
-            }, $scope.messages)
-        }, function (err){
-            $log.error(err);
+        //RoomFactory.getAll().then(data => angular.forEach(data, room => this.push(room), $scope.rooms));
+        RoomFactory.getAll().then(function(data){
+          angular.forEach(data, function(room){
+            this.push(room);
+          }, $scope.rooms);
         });
+
+        //MessageFactory.getAll().then((data) => angular.forEach(data, (message) => this.push(message), $scope.messages));
+        MessageFactory.getAll().then(function(messages){
+          angular.forEach(messages, function(message){
+            this.push(message.message);
+          }, $scope.messages);
+        });
+
+        $scope.selectRoom = room => {
+          $scope.$storage.room = room;
+        };
 
         $scope.$on('socket:broadcast', function (event, data){
             $log.info('Received a %s', event.name);
+
             if(!data){
                 $log.info('Error, nothing to display');
             } else {
@@ -28,70 +36,67 @@ angular.module('chatty.controllers', [])
         });
 
         $scope.sendMessage = function (){
-
-            //TODO: Fix factory then calls
             MessageFactory.saveMessage({
+
                 message: {
                     message: $scope.message,
-                    username: $scope.$storage.username,
-                    room: 'default',
+                    username: $scope.$storage.username || null,
+                    room: $scope.$storage.room || null,
                     date: new Date()
                 }
+
             }).then(function (data){
                 if(data.status != '401'){
+
                     $log.info(data);
                     socket.emit('message', $scope.message);
                     $scope.message = '';
+
                 } else {
                     Notification.error('No room was selected');
                 }
             });
-
         };
-
     }])
+
     .controller('SignInCtrl', ['$scope', '$http', '$log', '$localStorage', 'UserFactory', function ($scope, $http, $log, $localStorage, UserFactory){
 
         $scope.$storage = $localStorage;
 
         $scope.signIn = function (){
-            UserFactory.signIn({user: $scope.user}).then(function (success){
+            UserFactory.signIn({user: $scope.user}).then(function (data){
 
-                //TODO: There is no error/success function call.  The factory service must pass a successful/error message to be parsed here and figure out what to do at that point, as the success call is called every time whether or not an error occurred.  This should be done in all of the factory calls in the controller
+                $log.info(data);
+                $log.info(new Date(data.created_on).toString());
+                $scope.$storage.username = data.username;
 
-                $log.info(success);
-                $log.info(new Date(success.created_on).toString());
-                $scope.$storage.username = success.username;
-            }, function (err){
-                $log.info('An error');
-                $log.error(err);
             });
         };
-
     }])
+
     .controller('SignUpCtrl', ['$scope', '$http', '$log', function ($scope, $http, $log){
 
-        //TODO: Fix factory then calls
         $scope.signUp = function (){
-            return $http.post('/api/user', {user: $scope.user}).then(function (success){
-                $log.info(success);
-            }, function (err){
-                $log.info(err);
+            return $http.post('/api/user', {user: $scope.user}).then(function (data){
+                $log.info(data);
             });
         }
     }])
+
     .controller('RoomCtrl', ['$scope', '$log', '$localStorage', 'RoomFactory', function ($scope, $log, $localStorage, RoomFactory){
 
         $scope.$storage = $localStorage;
 
         $scope.addRoom = function (){
             RoomFactory.createRoom({
+
                 room: {
                     room: $scope.room,
                     created_on: new Date(),
                     password: $scope.password || null,
                     created_by: $scope.$storage.username
                 }
+
             }).then(function (data){
                 $log.info(data);
             });

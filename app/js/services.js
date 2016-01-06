@@ -7,7 +7,6 @@ angular.module('chatty.services', [])
     }])
 
     .factory('MessageFactory', ['$http', function ($http){
-
         return {
 
             getAll: function (){
@@ -66,6 +65,7 @@ angular.module('chatty.services', [])
 
     .factory('RoomFactory', ['$http', '$log', function ($http, $log){
         return {
+
             getAll: function (){
                 return $http.get('/api/rooms').then(function (success){
                     return success.data;

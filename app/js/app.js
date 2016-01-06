@@ -12,21 +12,33 @@ angular.module('chatty', [
     .config(['$stateProvider', '$urlRouterProvider', 'NotificationProvider', function ($stateProvider, $urlRouterProvider, NotificationProvider){
         $urlRouterProvider.otherwise('/');
         $stateProvider
+
             .state('signin', {
                 url: '/',
                 templateUrl: 'templates/signin.html',
-                controller: 'SignInCtrl'
+                controller: 'SignInCtrl',
+                data: {
+                  data1: 'HELLO!'
+                },
+                resolve: {
+                  data2: function(){
+                    return 'Hello';
+                  }
+                }
             })
+
             .state('room', {
                 url: '/room',
                 templateUrl: 'templates/room.html',
                 controller: 'RoomCtrl'
             })
+
             .state('signup', {
                 url: '/signup',
                 templateUrl: 'templates/signup.html',
                 controller: 'SignUpCtrl'
             })
+
             .state('chat', {
                 url: '/chat',
                 templateUrl: 'templates/chat.html',
